@@ -1,0 +1,270 @@
+org.rspeer.runetek.api.VarbitComposite
+
+public class VarbitComposite {
+
+    public class Barrows {
+        public static final int DHAROK = 458;
+        public static final int AHRIM = 457;
+        public static final int KARIL = 460;
+        public static final int VERAC = 462;
+        public static final int GUTHAN = 459;
+        public static final int TORAG = 461;
+        public static final int BARROWS_MONSTER_KC = 464;
+    }
+
+    public class DuelArenaSlots {
+        public static final int HELM = 643;
+        public static final int CAPE = 644;
+        public static final int AMULET = 645;
+        public static final int WEAPON = 646;
+        public static final int BODY = 647;
+        public static final int SHIELD = 648;
+        public static final int LEGS = 650;
+        public static final int GLOVES = 652;
+        public static final int BOOTS = 653;
+        public static final int RING = 655;
+        public static final int AMMO = 656;
+    }
+
+    public class FarmingItems {
+        public static final int FARMING_RAKE = 1435;
+        public static final int SEED_DIBBER = 1436;
+        public static final int SPADE = 1437;
+        public static final int SECATEURS = 1438;
+        public static final int WATERING_CAN = 1439;
+        public static final int GARDENING_TROWEL = 1440;
+        public static final int EMPTY_BUCKETS = 1441;
+        public static final int NORMAL_COMPOST = 1442;
+        public static final int SUPER_COMPOST = 1443;
+    }
+
+    public class UnlockEmotes {
+        public static final int FLAP = 2309;
+        public static final int SLAP_HEAD = 2310;
+        public static final int IDEA = 2311;
+        public static final int STAMP = 2312;
+        public static final int GOBLIN_BOW_AND_SALUTE = 532;
+    }
+
+    public class CanoeTravel {
+        public static final int LUMBRIDGE_CANOE_STATION = 1839; // Varp 674 and 675 for canoes
+        public static final int CHAMPIONS_GUILD_CANOE_STATION = 1840;
+        public static final int BARBARIAN_VILLAGE_CANOE_STATION = 1841;
+        public static final int EDGEVILLE_CANOE_STATION = 1842;
+        public static final int CHINCHOMPA_CANOE_STATION = 1843;
+    }
+
+    public class InterfaceSettings {
+        public static final int DATAORBS_HIDDEN = 4084;
+        public static final int CHATBOX_TRANSPARENT = 4608;
+        public static final int TABS_CAN_BE_CLOSED_BY_HOTKEY = 4611;
+        public static final int SIDEPANELS_OPAQUE = 4609;
+        public static final int SHOW_XP_TILL_LEVEL = 4181;
+        public static final int HIDE_PM_WHEN_CHAT_HIDDEN = 4089;
+        public static final int LOGIN_TIMEOUT_HIDDEN = 1627;
+        public static final int SIDESTONES_ARRANGEMENT = 4607;
+        public static final int CHATBOX_SOLID = 2570;
+        public static final int GAME_FILTER = 26;
+        public static final int AUTOCAST_SELECTED = 276;
+        public static final int LOCK_CAMERA = 4606;
+        public static final int MIDDLE_MOUSE = 3217;
+    }
+
+    public class FairyRings {
+        /**
+         * values: 0=A, 1=D, 2=C, 3=B
+         */
+        public static final int FAIRY_RING_LEFT = 3985;
+        /**
+         * values: 0=I, 1=L, 2=K, 3=J
+         */
+        public static final int FAIRY_RING_MIDDLE = 3986;
+        /**
+         * values: 0=LOGOUT_TAB, 1=S, 2=R, 3=Q
+         */
+        public static final int FAIRY_RING_RIGHT = 3987;
+    }
+
+    public class PetUnlocks {
+        public static final int PET_DAGANNOTH_SUPREME = 4338;
+        public static final int PET_DAGANNOTH_PRIME = 4339;
+        public static final int PET_DAGANNOTH_REX = 4340;
+        public static final int PET_PENANCE_QUEEN = 4341;
+        public static final int PET_KREEARRA = 4342;
+        public static final int PET_GRAARDOR = 4343;
+        public static final int PET_ZILYANA = 4344;
+        public static final int PET_KRIL = 4345;
+        public static final int PET_MOLE = 4346;
+        public static final int PET_KBD = 4347;
+        public static final int PET_KQ = 4348;
+        public static final int PET_SMOKE_DEVIL = 4349;
+        public static final int PET_KRAKEN = 4350;
+        public static final int PET_CHOMPY = 4445;
+        public static final int PET_CALLISTO = 4568;
+        public static final int PET_VENENATIS = 4429;
+        public static final int PET_VETION_PURPLE = 4569;
+        public static final int PET_SCORPIA = 4570;
+        public static final int PET_JAD = 4699;
+        public static final int PET_CERBERUS = 4726;
+        public static final int PET_HERON = 4846;
+        public static final int PET_GOLEM = 4847;
+        public static final int PET_BEAVER = 4848;
+        public static final int PET_CHINCHOMPA = 4849;
+        public static final int PET_ABYSSAL = 204;
+        public static final int PET_CORE = 997;
+        public static final int PET_ZULRAH = 1526;
+        public static final int PET_CHAOS_ELE = 3962;
+        public static final int PET_GIANT_SQUIRREL = 2169;
+        public static final int PET_TANGLEROOT = 2170;
+        public static final int PET_RIFT_GUARDIAN = 2171;
+        public static final int PET_ROCKY = 2172;
+        public static final int PET_BLOODHOUND = 5181;
+        public static final int PET_PHOENIX = 5363;
+    }
+
+    public class SlayerUnlocks {
+        public static final int GARGOYLE_SMASHER = 4027;
+        public static final int SLUG_SALTER = 4028;
+        public static final int REPTILE_FREEZER = 4029;
+        public static final int SHROOM_SPRAYER = 4030;
+        public static final int NEED_MORE_DARKNESS = 4031;
+        public static final int ANKOU_VERY_MUCH = 4085;
+        public static final int SUQ_ANOTHER_ONE = 4086;
+        public static final int FIRE_AND_DARKNESS = 4087;
+        public static final int PEDAL_TO_THE_METALS = 4088;
+        public static final int AUGMENT_MY_ABBIES = 4090;
+        public static final int ITS_DARK_IN_HERE = 4091;
+        public static final int GREATER_CHALLENGE = 4092;
+        public static final int I_HOPE_YOU_MITH_ME = 4094;
+        public static final int WATCH_THE_BIRDIE = 4095;
+        public static final int HOT_STUFF = 4691;
+        public static final int LIKE_A_BOSS = 4724;
+        public static final int BLEED_ME_DRY = 4746;
+        public static final int SMELL_YA_LATER = 4747;
+        public static final int BIRDS_OF_A_FEATHER = 4748;
+        public static final int I_REALLY_MITH_YOU = 4749;
+        public static final int HORRORIFIC = 4750;
+        public static final int TO_DUST_YOU_SHALL_RETURN = 4751;
+        public static final int WYVER_NOTHER_ONE = 4752;
+        public static final int GET_SMASHED = 4753;
+        public static final int NECHS_PLEASE = 4754;
+        public static final int KRACK_ON = 4755;
+        public static final int SPIRITUAL_FERVOUR = 4757;
+        public static final int REPTILE_GOT_RIPPED = 4996;
+        public static final int SLAYER_UNLOCKED_HELM = 3202;
+        public static final int RING_BLING = 3207;
+        public static final int BROADER_FLETCHING = 3208;
+        public static final int KING_BLACK_BONNET = 5080;
+        public static final int KALPHITE_KHAT = 5081;
+        public static final int UNHOLY_HELMET = 5082;
+        public static final int BIGGER_AND_BADDER = 5358;
+        public static final int SEEING_RED = 4262;
+        public static final int GET_SCABARIGHT_ON_IT = 4391;
+    }
+
+    public class PrayerTab {
+        public static final int THICK_SKIN = 4104;
+        public static final int BURST_OF_STRENGTH = 4105;
+        public static final int CLARITY_OF_THOUGHT = 4106;
+        public static final int ROCK_SKIN = 4107;
+        public static final int SUPERHUMAN_STRENGTH = 4108;
+        public static final int IMPROVED_REFLEXIS = 4109;
+        public static final int RAPID_RESTORE = 4110;
+        public static final int RAPID_HEAL = 4111;
+        public static final int PROTECT_ITEM = 4112;
+        public static final int STEEL_SKIN = 4113;
+        public static final int ULTIMATE_STRENGTH = 4114;
+        public static final int INCREDIBLE_REFLEXES = 4115;
+        public static final int PROTECT_FROM_MAGIC = 4116;
+        public static final int PROTECT_FROM_MISSILES = 4117;
+        public static final int PROTECT_FROM_MELEE = 4118;
+        public static final int RETRIBUTION = 4119;
+        public static final int REDEMPTION = 4120;
+        public static final int SMITE = 4121;
+        public static final int SHARP_EYE = 4122;
+        public static final int MYSTIC_WILL = 4123;
+        public static final int HAWK_EYE = 4124;
+        public static final int MYSTIC_LORE = 4125;
+        public static final int EAGLE_EYE = 4126;
+        public static final int MYSTIC_MIGHT = 4127;
+        public static final int CHIVALRY = 4128;
+        public static final int PIETY = 4129;
+    }
+
+    public class RunecraftPouches {
+        public static final int RUNEPOUCH_TYPE_LEFT = 29;
+        public static final int RUNEPOUCH_TYPE_MIDDLE = 1622;
+        public static final int RUNEPOUCH_TYPE_RIGHT = 1623;
+        public static final int RUNEPOUCH_NUM_LEFT = 1624;
+        public static final int RUNEPOUCH_NUM_MIDDLE = 1625;
+        public static final int RUNEPOUCH_NUM_RIGHT = 1626;
+    }
+
+    public class BankOptions {
+        public static final int BANK_NOTE = 3958;
+        public static final int BANK_PLACEHOLDERS = 3755;
+        public static final int BANK_INSERT = 3959;
+        public static final int BANK_SELECTED_TAB = 4150;
+        public static final int BANK_YOUR_LOOT = 4139;
+        public static final int LAST_BANK_X = 3960;
+        public static final int BANK_INCINERATOR = 5102;
+        public static final int BANK_DEPOSIT_WORN_ITEMS_BTN = 5364;
+    }
+
+    public class GodWarsDungeon {
+        public static final int GOD_WARS_DUNGEON = 3966;
+        public static final int SARADOMIN_FIRST_ROPE = 3967;
+        public static final int SARADOMIN_SECOND_ROPE = 3968;
+        public static final int SARADOMIN_KC = 3972;
+        public static final int ARMADYL_KC = 3973;
+        public static final int BANDOS_KC = 3975;
+        public static final int ZAMORAK_KC = 3976;
+    }
+
+    public class InterfaceHotkeys {
+        public static final int COMBAT_HOTKEY = 4675;
+        public static final int SKILLS_HOTKEY = 4676;
+        public static final int QUESTS_HOTKEY = 4677;
+        public static final int INVENTORY_HOTKEY = 4678;
+        public static final int EQUIPMENT_HOTKEY = 4679;
+        public static final int PRAYERS_HOTKEY = 4680;
+        public static final int ESC_CLOSES_INTERFACES = 4681;
+        public static final int MAGIC_HOTKEY = 4682;
+        public static final int CLANCHAT_HOTKEY = 4683;
+        public static final int FRIENDS_HOTKEY = 4684;
+        public static final int IGNORES_HOTKEY = 4685;
+        public static final int SETTINGS_HOTKEY = 4686;
+        public static final int EMOTES_HOTKEY = 4687;
+        public static final int MUSIC_HOTKEY = 4688;
+        public static final int LOGOUT_HOTKEY = 4689;
+    }
+
+    public class XPCounter {
+        public static final int XP_DROPS_POSITION = 4692;
+        public static final int XP_DROPS_SIZE = 4693;
+        public static final int XP_DROPS_DURATION = 4694;
+        public static final int XP_DROPS_COLOR = 4695;
+        public static final int XP_DROPS_GROUP = 4696;
+        public static final int XP_DROPS_COUNTER = 4697;
+        public static final int XP_DROPS_PROGRESSBAR = 4698;
+        public static final int XP_DROPS_VISIBLE = 4702;
+        public static final int XP_DROPS_SPEED = 4722;
+    }
+
+    public class TradeCheck {
+        public static final int TRADE_MODIFIED_LEFT = 4374;
+        public static final int TRADE_MODIFIED_RIGHT = 4375;
+    }
+
+    public class PVPTools {
+        public static final int VENGENACE_COOLDOWN = 2451;
+        public static final int KDR_OVERLAY = 4143;
+        public static final int MULTIWAY_AREA = 4605;
+        public static final int DEADMAN_SKULL_TIMER = 4854;
+        public static final int DEADMAN_KEYS_CARRIED = 4855;
+        public static final int BOUNTY_HUNTER_POINTS = 1132;
+        public static final int DEADMAN_ACTIVE_KEY_VIEWED = 4842;
+        public static final int DEADMAN_WITHDRAW_LOOT_TYPE = 4843;
+    }
+
+}
