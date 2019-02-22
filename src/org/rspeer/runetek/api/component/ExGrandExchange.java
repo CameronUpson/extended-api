@@ -7,6 +7,8 @@ import org.rspeer.runetek.api.movement.Movement;
 import org.rspeer.runetek.api.scene.Npcs;
 import org.rspeer.runetek.providers.RSGrandExchangeOffer;
 
+import java.util.Arrays;
+
 /**
  * @author burak
  */
@@ -23,38 +25,81 @@ public final class ExGrandExchange {
     }
 
     private static boolean exchange(RSGrandExchangeOffer.Type type, int quantity, int price, boolean toBank, boolean itemIsSet) {
-        if (!GrandExchange.isOpen()) {
-            //GrandExchange.open();
+        return openGrandExchange()
+                && collectDanglingOffers(toBank)
+                && openGrandExchangeSetup(type)
+                && setItem(itemIsSet)
+                && setItemPrice(price)
+                && setItemQuantity(quantity)
+                && GrandExchangeSetup.confirm();
+    }
 
-            //placeholder till GrandExchange.open() works again
-            Npc clerk = Npcs.getNearest("Grand Exchange Clerk");
-            if (clerk != null) {
-                clerk.interact("Exchange");
-            } else {
-                Movement.walkToRandomized(BankLocation.GRAND_EXCHANGE.getPosition());
-            }
-        } else if (GrandExchange.getOffers(x -> x.getProgress().equals(RSGrandExchangeOffer.Progress.FINISHED)).length > 0) {
-            GrandExchange.collectAll(toBank);
+    private static boolean openGrandExchange() {
+        //GrandExchange.open();
+
+        //placeholder till GrandExchange.open() works again
+        Npc clerk = findNearestClerk();
+
+        if (clerk != null) {
+            clerk.interact("Exchange");
         } else {
-            if (!GrandExchangeSetup.isOpen() && GrandExchange.createOffer(type)) {
-                Time.sleepUntil(GrandExchangeSetup::isOpen, TIMEOUT);
-            } else {
-                if (GrandExchangeSetup.getItem() != null) {
-                    if (GrandExchangeSetup.getPricePerItem() != price && GrandExchangeSetup.setPrice(price)) {
-                        Time.sleepUntil(() -> GrandExchangeSetup.getPricePerItem() == price, TIMEOUT);
-                    } else if (GrandExchangeSetup.getQuantity() != quantity && quantity > SELL_ALL && GrandExchangeSetup.setQuantity(quantity)) {
-                        Time.sleepUntil(() -> GrandExchangeSetup.getQuantity() == quantity, TIMEOUT);
-                    } else {
-                        return GrandExchangeSetup.confirm();
-                    }
-                } else {
-                    if (itemIsSet) {
-                        Time.sleepUntil(() -> GrandExchangeSetup.getItem() != null, TIMEOUT);
-                    }
-                }
-            }
+            walkToGe();
         }
-        return false;
+        return GrandExchange.isOpen();
+    }
+
+    private static boolean collectDanglingOffers(boolean toBank) {
+        if (hasNotAnyFinishedOffers()) return true;
+        GrandExchange.collectAll(toBank);
+        return Time.sleepUntil(ExGrandExchange::hasNotAnyFinishedOffers, TIMEOUT);
+    }
+
+    private static boolean openGrandExchangeSetup(RSGrandExchangeOffer.Type offerType) {
+        if (GrandExchangeSetup.isOpen()) return true;
+        return GrandExchange.createOffer(offerType)
+                && Time.sleepUntil(GrandExchangeSetup::isOpen, TIMEOUT);
+
+    }
+
+    private static Npc findNearestClerk() {
+        return Npcs.getNearest("Grand Exchange Clerk");
+    }
+
+    private static void walkToGe() {
+        Movement.walkToRandomized(BankLocation.GRAND_EXCHANGE.getPosition());
+    }
+
+    private static boolean hasNotAnyFinishedOffers() {
+        //TODO should use stream any / first
+        return Arrays.stream(GrandExchange.getOffers())
+                .noneMatch(it -> it.getProgress() == RSGrandExchangeOffer.Progress.FINISHED);
+    }
+
+    private static boolean setItem(boolean hasBeenSet) {
+        return hasBeenSet &&
+                //TODO what is this api lol
+                Time.sleepUntil(() -> GrandExchangeSetup.getItem() != null, TIMEOUT);
+    }
+
+    private static boolean isItemPriceSettled(int desired) {
+        return GrandExchangeSetup.getPricePerItem() == desired;
+    }
+
+    private static boolean isItemQuantitySettled(int desired) {
+        return GrandExchangeSetup.getQuantity() == desired;
+    }
+
+    private static boolean setItemPrice(int price) {
+        return GrandExchangeSetup.setPrice(price)
+                && Time.sleepUntil(() -> isItemPriceSettled(price), TIMEOUT);
+    }
+
+    private static boolean setItemQuantity(int quantity) {
+        if (quantity == SELL_ALL) return true;
+
+        return GrandExchangeSetup.setQuantity(quantity)
+                && Time.sleepUntil(() -> isItemQuantitySettled(quantity), TIMEOUT);
+
     }
 
     public static boolean buy(int id, int quantity, int price, boolean toBank) {
