@@ -26,35 +26,31 @@ public final class ExGrandExchange {
         if (!GrandExchange.isOpen()) {
             //GrandExchange.open();
 
-            //placeholder till GrandExchange.open() works again
             Npc clerk = Npcs.getNearest("Grand Exchange Clerk");
-            if (clerk != null) {
-                clerk.interact("Exchange");
-            } else {
-                Movement.walkToRandomized(BankLocation.GRAND_EXCHANGE.getPosition());
-            }
-        } else if (GrandExchange.getOffers(x -> x.getProgress().equals(RSGrandExchangeOffer.Progress.FINISHED)).length > 0) {
-            GrandExchange.collectAll(toBank);
-        } else {
-            if (!GrandExchangeSetup.isOpen() && GrandExchange.createOffer(type)) {
-                Time.sleepUntil(GrandExchangeSetup::isOpen, TIMEOUT);
-            } else {
-                if (GrandExchangeSetup.getItem() != null) {
-                    if (GrandExchangeSetup.getPricePerItem() != price && GrandExchangeSetup.setPrice(price)) {
-                        Time.sleepUntil(() -> GrandExchangeSetup.getPricePerItem() == price, TIMEOUT);
-                    } else if (GrandExchangeSetup.getQuantity() != quantity && quantity > SELL_ALL && GrandExchangeSetup.setQuantity(quantity)) {
-                        Time.sleepUntil(() -> GrandExchangeSetup.getQuantity() == quantity, TIMEOUT);
-                    } else {
-                        return GrandExchangeSetup.confirm();
-                    }
-                } else {
-                    if (itemIsSet) {
-                        Time.sleepUntil(() -> GrandExchangeSetup.getItem() != null, TIMEOUT);
-                    }
-                }
-            }
+            return clerk != null ? clerk.interact("Exchange") : Movement.walkToRandomized(BankLocation.GRAND_EXCHANGE.getPosition());
         }
-        return false;
+
+        if (GrandExchange.getOffers(x -> x.getProgress().equals(RSGrandExchangeOffer.Progress.FINISHED)).length > 0) {
+            return GrandExchange.collectAll(toBank);
+        }
+
+        if (!GrandExchangeSetup.isOpen() && GrandExchange.createOffer(type)) {
+            return Time.sleepUntil(GrandExchangeSetup::isOpen, TIMEOUT);
+        }
+
+        if (GrandExchangeSetup.getItem() == null) {
+            return itemIsSet;
+        }
+
+        if (GrandExchangeSetup.getPricePerItem() != price) {
+            return GrandExchangeSetup.setPrice(price);
+        }
+
+        if (GrandExchangeSetup.getQuantity() != quantity && quantity > SELL_ALL) {
+            return GrandExchangeSetup.setQuantity(quantity);
+        }
+
+        return GrandExchangeSetup.confirm();
     }
 
     public static boolean buy(int id, int quantity, int price, boolean toBank) {
