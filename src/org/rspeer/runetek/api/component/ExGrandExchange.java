@@ -13,6 +13,8 @@ import org.rspeer.runetek.providers.RSGrandExchangeOffer;
 public final class ExGrandExchange {
     private static final int SELL_ALL = 0;
     private static final int TIMEOUT = 3000;
+    private static final String EXCHANGE_ACTION = "Exchange";
+    private static final String GE_NPC_NAME = "Grand Exchange Clerk";
 
     private static boolean exchange(RSGrandExchangeOffer.Type type, int id, int quantity, int price, boolean toBank) {
         return exchange(type, quantity, price, toBank, GrandExchangeSetup.setItem(id));
@@ -26,8 +28,9 @@ public final class ExGrandExchange {
         if (!GrandExchange.isOpen()) {
             //GrandExchange.open();
 
-            Npc clerk = Npcs.getNearest("Grand Exchange Clerk");
-            return clerk != null ? clerk.interact("Exchange") : Movement.walkToRandomized(BankLocation.GRAND_EXCHANGE.getPosition());
+            // placeholder
+            Npc clerk = Npcs.getNearest(GE_NPC_NAME);
+            return clerk != null ? clerk.interact(EXCHANGE_ACTION) : Movement.walkToRandomized(BankLocation.GRAND_EXCHANGE.getPosition());
         }
 
         if (GrandExchange.getOffers(x -> x.getProgress().equals(RSGrandExchangeOffer.Progress.FINISHED)).length > 0) {
