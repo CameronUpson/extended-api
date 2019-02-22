@@ -9,6 +9,8 @@ import org.rspeer.runetek.api.scene.Npcs;
 import org.rspeer.runetek.providers.RSGrandExchangeOffer;
 import org.rspeer.runetek.providers.RSItemDefinition;
 
+import java.util.Arrays;
+
 /**
  * @author burak
  */
@@ -31,27 +33,54 @@ public final class ExGrandExchange {
             return clerk != null ? clerk.interact(EXCHANGE_ACTION) : Movement.walkToRandomized(BankLocation.GRAND_EXCHANGE.getPosition());
         }
 
-        if (GrandExchange.getOffers(x -> x.getProgress().equals(RSGrandExchangeOffer.Progress.FINISHED)).length > 0) {
-            return GrandExchange.collectAll(toBank);
-        }
+        return collectFinishedOffers(toBank)
+                && createOffer(type)
+                && setItem(item)
+                && setItemPrice(price)
+                && setItemQuantity(quantity)
+                && GrandExchangeSetup.confirm();
 
-        if (!GrandExchangeSetup.isOpen()) {
-            return GrandExchange.createOffer(type) && Time.sleepUntil(GrandExchangeSetup::isOpen, TIMEOUT);
-        }
+    }
 
-        if (GrandExchangeSetup.getItem() == null) {
-            return GrandExchangeSetup.setItem(item.getId()) && Time.sleepUntil(() -> GrandExchangeSetup.getItem() != null, TIMEOUT);
-        }
+    private static boolean setItem(RSItemDefinition item) {
+        return GrandExchangeSetup.setItem(item.getId());
+    }
 
-        if (GrandExchangeSetup.getPricePerItem() != price) {
-            return GrandExchangeSetup.setPrice(price) && Time.sleepUntil(() -> GrandExchangeSetup.getPricePerItem() == price, TIMEOUT);
-        }
+    private static boolean collectFinishedOffers(boolean toBank) {
+        if (hasNotAnyFinishedOffers()) return true;
+        GrandExchange.collectAll(toBank);
+        return Time.sleepUntil(ExGrandExchange::hasNotAnyFinishedOffers, TIMEOUT);
+    }
 
-        if (GrandExchangeSetup.getQuantity() != quantity && quantity > SELL_ALL) {
-            return GrandExchangeSetup.setQuantity(quantity) && Time.sleepUntil(() -> GrandExchangeSetup.getQuantity() == quantity, TIMEOUT);
-        }
+    private static boolean createOffer(RSGrandExchangeOffer.Type offerType) {
+        if (GrandExchangeSetup.isOpen()) return true;
+        return GrandExchange.createOffer(offerType)
+                && Time.sleepUntil(GrandExchangeSetup::isOpen, TIMEOUT);
+    }
 
-        return GrandExchangeSetup.isOpen() && GrandExchangeSetup.confirm() && Time.sleepUntil(() -> !GrandExchangeSetup.isOpen(), TIMEOUT);
+    private static boolean hasNotAnyFinishedOffers() {
+        return Arrays.stream(GrandExchange.getOffers())
+                .noneMatch(it -> it.getProgress() == RSGrandExchangeOffer.Progress.FINISHED);
+    }
+
+    private static boolean isItemPriceSettled(int desired) {
+        return GrandExchangeSetup.getPricePerItem() == desired;
+    }
+
+    private static boolean isItemQuantitySettled(int desired) {
+        return GrandExchangeSetup.getQuantity() == desired;
+    }
+
+    private static boolean setItemPrice(int price) {
+        return GrandExchangeSetup.setPrice(price)
+                && Time.sleepUntil(() -> isItemPriceSettled(price), TIMEOUT);
+    }
+
+    private static boolean setItemQuantity(int quantity) {
+        if (quantity == SELL_ALL) return true;
+
+        return GrandExchangeSetup.setQuantity(quantity)
+                && Time.sleepUntil(() -> isItemQuantitySettled(quantity), TIMEOUT);
     }
 
     public static boolean buy(int id, int quantity, int price, boolean toBank) {
@@ -59,7 +88,7 @@ public final class ExGrandExchange {
     }
 
     public static boolean buy(String name, int quantity, int price, boolean toBank) {
-        return exchange(RSGrandExchangeOffer.Type.BUY, Definitions.getItem(name, RSItemDefinition::isTradable), quantity, price, toBank);
+        return exchange(RSGrandExchangeOffer.Type.BUY, Definitions.getItem(name, x -> x.isTradable() || x.isNoted()), quantity, price, toBank);
     }
 
     public static boolean sell(int id, int quantity, int price, boolean toBank) {
@@ -67,6 +96,6 @@ public final class ExGrandExchange {
     }
 
     public static boolean sell(String name, int quantity, int price, boolean toBank) {
-        return exchange(RSGrandExchangeOffer.Type.SELL, Definitions.getItem(name, RSItemDefinition::isTradable), quantity, price, toBank);
+        return exchange(RSGrandExchangeOffer.Type.SELL, Definitions.getItem(name, x -> x.isTradable() || x.isNoted()), quantity, price, toBank);
     }
 }
