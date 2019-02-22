@@ -1,10 +1,8 @@
-package burak.grandexchange;
+package org.rspeer.runetek.api.component;
 
 import org.rspeer.runetek.adapter.scene.Npc;
 import org.rspeer.runetek.api.commons.BankLocation;
 import org.rspeer.runetek.api.commons.Time;
-import org.rspeer.runetek.api.component.GrandExchange;
-import org.rspeer.runetek.api.component.GrandExchangeSetup;
 import org.rspeer.runetek.api.movement.Movement;
 import org.rspeer.runetek.api.scene.Npcs;
 import org.rspeer.runetek.providers.RSGrandExchangeOffer;
@@ -12,7 +10,7 @@ import org.rspeer.runetek.providers.RSGrandExchangeOffer;
 /**
  * @author burak
  */
-public class ExGrandExchange {
+public final class ExGrandExchange {
     private static final int SELL_ALL = 0;
     private static final int TIMEOUT = 3000;
 
