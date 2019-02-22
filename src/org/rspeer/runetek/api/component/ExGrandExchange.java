@@ -35,23 +35,23 @@ public final class ExGrandExchange {
             return GrandExchange.collectAll(toBank);
         }
 
-        if (!GrandExchangeSetup.isOpen() && GrandExchange.createOffer(type)) {
-            return Time.sleepUntil(GrandExchangeSetup::isOpen, TIMEOUT);
+        if (!GrandExchangeSetup.isOpen()) {
+            return GrandExchange.createOffer(type) && Time.sleepUntil(GrandExchangeSetup::isOpen, TIMEOUT);
         }
 
         if (GrandExchangeSetup.getItem() == null) {
-            return GrandExchangeSetup.setItem(item.getId());
+            return GrandExchangeSetup.setItem(item.getId()) && Time.sleepUntil(() -> GrandExchangeSetup.getItem() != null, TIMEOUT);
         }
 
         if (GrandExchangeSetup.getPricePerItem() != price) {
-            return GrandExchangeSetup.setPrice(price);
+            return GrandExchangeSetup.setPrice(price) && Time.sleepUntil(() -> GrandExchangeSetup.getPricePerItem() == price, TIMEOUT);
         }
 
         if (GrandExchangeSetup.getQuantity() != quantity && quantity > SELL_ALL) {
-            return GrandExchangeSetup.setQuantity(quantity);
+            return GrandExchangeSetup.setQuantity(quantity) && Time.sleepUntil(() -> GrandExchangeSetup.getQuantity() == quantity, TIMEOUT);
         }
 
-        return GrandExchangeSetup.isOpen() && GrandExchangeSetup.confirm();
+        return GrandExchangeSetup.isOpen() && GrandExchangeSetup.confirm() && Time.sleepUntil(() -> !GrandExchangeSetup.isOpen(), TIMEOUT);
     }
 
     public static boolean buy(int id, int quantity, int price, boolean toBank) {
