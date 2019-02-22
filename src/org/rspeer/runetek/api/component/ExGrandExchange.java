@@ -1,11 +1,13 @@
 package org.rspeer.runetek.api.component;
 
 import org.rspeer.runetek.adapter.scene.Npc;
+import org.rspeer.runetek.api.Definitions;
 import org.rspeer.runetek.api.commons.BankLocation;
 import org.rspeer.runetek.api.commons.Time;
 import org.rspeer.runetek.api.movement.Movement;
 import org.rspeer.runetek.api.scene.Npcs;
 import org.rspeer.runetek.providers.RSGrandExchangeOffer;
+import org.rspeer.runetek.providers.RSItemDefinition;
 
 /**
  * @author burak
@@ -16,15 +18,11 @@ public final class ExGrandExchange {
     private static final String EXCHANGE_ACTION = "Exchange";
     private static final String GE_NPC_NAME = "Grand Exchange Clerk";
 
-    private static boolean exchange(RSGrandExchangeOffer.Type type, int id, int quantity, int price, boolean toBank) {
-        return exchange(type, quantity, price, toBank, GrandExchangeSetup.setItem(id));
+    private static boolean exchange(RSGrandExchangeOffer.Type type, RSItemDefinition item, int quantity, int price, boolean toBank) {
+        return exchange(type, quantity, price, toBank, item);
     }
 
-    private static boolean exchange(RSGrandExchangeOffer.Type type, String name, int quantity, int price, boolean toBank) {
-        return exchange(type, quantity, price, toBank, GrandExchangeSetup.setItem(name));
-    }
-
-    private static boolean exchange(RSGrandExchangeOffer.Type type, int quantity, int price, boolean toBank, boolean itemIsSet) {
+    private static boolean exchange(RSGrandExchangeOffer.Type type, int quantity, int price, boolean toBank, RSItemDefinition item) {
         if (!GrandExchange.isOpen()) {
             //GrandExchange.open();
 
@@ -42,7 +40,7 @@ public final class ExGrandExchange {
         }
 
         if (GrandExchangeSetup.getItem() == null) {
-            return itemIsSet;
+            return GrandExchangeSetup.setItem(item.getId());
         }
 
         if (GrandExchangeSetup.getPricePerItem() != price) {
@@ -53,22 +51,22 @@ public final class ExGrandExchange {
             return GrandExchangeSetup.setQuantity(quantity);
         }
 
-        return GrandExchangeSetup.confirm();
+        return GrandExchangeSetup.isOpen() && GrandExchangeSetup.confirm();
     }
 
     public static boolean buy(int id, int quantity, int price, boolean toBank) {
-        return exchange(RSGrandExchangeOffer.Type.BUY, id, quantity, price, toBank);
+        return exchange(RSGrandExchangeOffer.Type.BUY, Definitions.getItem(id), quantity, price, toBank);
     }
 
     public static boolean buy(String name, int quantity, int price, boolean toBank) {
-        return exchange(RSGrandExchangeOffer.Type.BUY, name, quantity, price, toBank);
+        return exchange(RSGrandExchangeOffer.Type.BUY, Definitions.getItem(name, RSItemDefinition::isTradable), quantity, price, toBank);
     }
 
     public static boolean sell(int id, int quantity, int price, boolean toBank) {
-        return exchange(RSGrandExchangeOffer.Type.SELL, id, quantity, price, toBank);
+        return exchange(RSGrandExchangeOffer.Type.SELL, Definitions.getItem(id), quantity, price, toBank);
     }
 
     public static boolean sell(String name, int quantity, int price, boolean toBank) {
-        return exchange(RSGrandExchangeOffer.Type.SELL, name, quantity, price, toBank);
+        return exchange(RSGrandExchangeOffer.Type.SELL, Definitions.getItem(name, RSItemDefinition::isTradable), quantity, price, toBank);
     }
 }
