@@ -13,9 +13,8 @@ Prior to submission, you should ensure that what you have doesn't already exist.
 ### Standards
 * Follow Java code conventions, including formatting
 
-* Braces always on the same line
-
 * Packages must start with `org.rspeer.runetek.api`
 
 * Class names must be clear and must not collide with existing classes in the RSPeer core API. As an example, inventory extensions would be named ExInventory instead of Inventory
 
+* Try to keep method bodies at a maximum of 20 lines unless deemed appropriate
