@@ -39,6 +39,9 @@ public class ExWilderness {
             return false;
 
         final InterfaceComponent enter_wilderness_remember = Interfaces.getFirst(INTER_MASTER_ENTER_WILDERNESS_WARNING, a -> a.containsAction("Disable warning"));
+        if (enter_wilderness == null)
+            return false;
+
         if (enter_wilderness_remember != null)
             enter_wilderness_remember.click();
 
