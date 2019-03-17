@@ -49,7 +49,7 @@ public final class MTAShop {
     }
 
     private static InterfaceComponent getItemContainer() {
-        return new InterfaceComponent(INTERFACE_COMP.resolve());
+        return INTERFACE_COMP.resolve();
     }
 
     public static Item[] getItems(Predicate<? super Item> predicate) {
