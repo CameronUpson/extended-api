@@ -61,7 +61,7 @@ public final class MTAShop {
         for (int i = 0; i < interfaceComponent.getItemIds().length; i++) {
             Item item = new Item(interfaceComponent, i);
             if (predicate.test(item))
-                list.add(new Item(interfaceComponent, i));
+                list.add(item);
         }
 
         return list.toArray(new Item[list.size()]);
