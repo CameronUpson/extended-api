@@ -64,7 +64,7 @@ public final class MTAShop {
                 list.add(item);
         }
 
-        return list.toArray(new Item[list.size()]);
+        return list.toArray(new Item[0]);
     }
 
     public static Item[] getItems() {
