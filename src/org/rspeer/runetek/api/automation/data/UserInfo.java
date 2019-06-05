@@ -1,4 +1,4 @@
-package org.rspeer.runetek.api.component.automation.data;
+package org.rspeer.runetek.api.automation.data;
 
 public class UserInfo {
     private int uid;

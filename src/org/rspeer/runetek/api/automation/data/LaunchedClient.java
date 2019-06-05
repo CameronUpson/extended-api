@@ -1,7 +1,7 @@
-package org.rspeer.runetek.api.component.automation.data;
+package org.rspeer.runetek.api.automation.data;
 
 import okhttp3.*;
-import org.rspeer.runetek.api.component.automation.Authentication;
+import org.rspeer.runetek.api.automation.Authentication;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

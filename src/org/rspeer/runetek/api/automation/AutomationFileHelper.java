@@ -1,4 +1,4 @@
-package org.rspeer.runetek.api.component.automation;
+package org.rspeer.runetek.api.automation;
 
 import java.io.File;
 

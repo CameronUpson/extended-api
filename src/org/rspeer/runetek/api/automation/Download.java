@@ -1,4 +1,4 @@
-package org.rspeer.runetek.api.component.automation;
+package org.rspeer.runetek.api.automation;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -57,7 +57,9 @@ public class Download {
             return true;
         final BufferedReader br = new BufferedReader(new FileReader(file));
         final String currentJarVersion = getCurrentJarVersion();
-        return !currentJarVersion.isEmpty() && !currentJarVersion.equals(br.readLine());
+        final String localJarVersion = br.readLine();
+        br.close();
+        return !currentJarVersion.isEmpty() && !currentJarVersion.equals(localJarVersion);
     }
 
     public static String getCurrentJarVersion() throws IOException {

@@ -1,4 +1,4 @@
-package org.rspeer.runetek.api.component.automation;
+package org.rspeer.runetek.api.automation;
 
 import java.io.*;
 
@@ -10,6 +10,8 @@ public class Authentication {
             throw new FileNotFoundException("No api key file found");
 
         final BufferedReader br = new BufferedReader(new FileReader(apiKeyFile));
-        return br.readLine();
+        final String result = br.readLine();
+        br.close();
+        return result;
     }
 }

@@ -1,13 +1,13 @@
-package org.rspeer.runetek.api.component.automation;
+package org.rspeer.runetek.api.automation;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.*;
-import org.rspeer.runetek.api.component.automation.data.LaunchedClient;
-import org.rspeer.runetek.api.component.automation.data.Launcher;
-import org.rspeer.runetek.api.component.automation.data.QuickLaunch;
+import org.rspeer.runetek.api.automation.data.LaunchedClient;
+import org.rspeer.runetek.api.automation.data.Launcher;
+import org.rspeer.runetek.api.automation.data.QuickLaunch;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
