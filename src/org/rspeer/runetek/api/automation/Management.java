@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.*;
 
-public class Managment {
+public class Management {
 
     private static final OkHttpClient HTTP_CLIENT = new OkHttpClient();
 
