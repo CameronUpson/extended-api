@@ -7,7 +7,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Download {
 
@@ -37,28 +41,24 @@ public class Download {
 
         final InputStream is = body.byteStream();
 
-        final BufferedInputStream input = new BufferedInputStream(is);
-        final OutputStream output = new FileOutputStream(AutomationFileHelper.getFile("cache\\rspeer.jar"));
+        Files.copy(is, Paths.get(AutomationFileHelper.getFile("cache" + File.separator + "rspeer.jar").toURI()));
+        is.close();
 
-        byte[] data = new byte[1024];
-        int count;
-        while ((count = input.read(data)) != -1) {
-            output.write(data, 0, count);
-        }
-        output.flush();
-        output.close();
-        input.close();
+        saveVersionFile(getCurrentJarVersion());
         return true;
+    }
+
+    private static void saveVersionFile(String version) throws IOException {
+        final File file = AutomationFileHelper.getCurrentVersionFile();
+        Files.write(file.toPath(), version.getBytes());
     }
 
     public static boolean shouldDownload() throws IOException {
         final File file = AutomationFileHelper.getCurrentVersionFile();
         if (!file.exists())
             return true;
-        final BufferedReader br = new BufferedReader(new FileReader(file));
         final String currentJarVersion = getCurrentJarVersion();
-        final String localJarVersion = br.readLine();
-        br.close();
+        final String localJarVersion = Files.lines(file.toPath()).findFirst().orElse("");
         return !currentJarVersion.isEmpty() && !currentJarVersion.equals(localJarVersion);
     }
 
