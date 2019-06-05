@@ -57,7 +57,7 @@ public class Managment {
                 .add("ApiClient", apiKey)
                 .add("Content-Type", "application/json")
                 .build();
-        System.out.println(qs);
+
         String body = "{\"payload\":" +
                 "{" +
                 "\"type\":\"start:client\"," +
@@ -70,6 +70,7 @@ public class Managment {
                 "}," +
                 "\"socket\":\"" + launchers.get(pcIndex).getSocketAddress() + "\"" +
                 "}";
+
         final RequestBody requestBody = RequestBody.create(
                 MediaType.parse("application/json"),
                 body
@@ -82,7 +83,6 @@ public class Managment {
                 .build();
 
         final Response response = HTTP_CLIENT.newCall(request).execute();
-        System.out.println(response.body().string());
         return response.isSuccessful();
     }
 
