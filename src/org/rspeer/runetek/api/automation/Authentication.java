@@ -1,6 +1,9 @@
 package org.rspeer.runetek.api.automation;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class Authentication {
 
@@ -9,9 +12,6 @@ public class Authentication {
         if (!apiKeyFile.exists())
             throw new FileNotFoundException("No api key file found");
 
-        final BufferedReader br = new BufferedReader(new FileReader(apiKeyFile));
-        final String result = br.readLine();
-        br.close();
-        return result;
+        return Files.lines(apiKeyFile.toPath()).findFirst().orElse("");
     }
 }
