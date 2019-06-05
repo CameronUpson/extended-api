@@ -41,7 +41,7 @@ public class Download {
 
         final InputStream is = body.byteStream();
 
-        Files.copy(is, Paths.get(AutomationFileHelper.getFile("cache\\rspeer.jar").toURI()));
+        Files.copy(is, Paths.get(AutomationFileHelper.getFile("cache" + File.separator + "rspeer.jar").toURI()));
         is.close();
 
         saveVersionFile(getCurrentJarVersion());
