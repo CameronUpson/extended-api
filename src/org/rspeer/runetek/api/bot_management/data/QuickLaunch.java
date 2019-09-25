@@ -1,4 +1,4 @@
-package org.rspeer.runetek.api.automation.data;
+package org.rspeer.runetek.api.bot_management.data;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
