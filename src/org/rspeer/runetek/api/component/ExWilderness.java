@@ -22,8 +22,9 @@ public class ExWilderness {
     private static final InterfaceAddress WILDERNESS_ROOT_LEVEL_ADDRESS = new InterfaceAddress(
             () -> Interfaces.getFirst(WILDERNESS_ROOT_INTERFACE_ID, interfaceComponent -> interfaceComponent.getText().contains("Level")));
 
-    private static final InterfaceAddress WILDERNESS_WARNING_DISABLE_ADDRESS = new InterfaceAddress(
-            () -> Interfaces.getFirst(WILDERNESS_WARNING_INTERFACE_ID, interfaceComponent -> interfaceComponent.containsAction("Disable warning")));
+    private static final InterfaceAddress WILDERNESS_WARNING_CHECKBOX_ADDRESS = new InterfaceAddress(
+            () -> Interfaces.getFirst(WILDERNESS_WARNING_INTERFACE_ID, interfaceComponent ->
+                    interfaceComponent.containsAction("Enable warning") || interfaceComponent.containsAction("Disable warning")));
 
     private static final InterfaceAddress WILDERNESS_WARNING_ENTER_ADDRESS = new InterfaceAddress(
             () -> Interfaces.getFirst(WILDERNESS_WARNING_INTERFACE_ID, interfaceComponent -> interfaceComponent.containsAction("Enter Wilderness")));
@@ -135,6 +136,24 @@ public class ExWilderness {
      * @return true if the click on "Enter Wilderness" is successful; false otherwise
      */
     public static boolean approveWarning(final boolean remember) {
+        // If remember is true continue
+        if (remember) {
+            // Get first interface component the text "Disable warning"
+            final InterfaceComponent warningCheckboxComponent = WILDERNESS_WARNING_CHECKBOX_ADDRESS.resolve();
+
+            // If the component is not null and it contains the disable warning action continue
+            if (warningCheckboxComponent != null && warningCheckboxComponent.containsAction("Disable warning")) {
+                // Click the warning checkbox
+                if (warningCheckboxComponent.click()) {
+                    // Sleep until the checkbox contains the enable warning action (verifies a successful click)
+                    if (!Time.sleepUntil(() -> warningCheckboxComponent.containsAction("Enable warning"), Random.low(2000, 4000))) {
+                        // If it didn't verify do a early return
+                        return false;
+                    }
+                }
+            }
+        }
+
         // Get first interface component the text "Enter Wilderness"
         final InterfaceComponent enterWildernessComponent = WILDERNESS_WARNING_ENTER_ADDRESS.resolve();
 
@@ -142,17 +161,6 @@ public class ExWilderness {
         if (enterWildernessComponent == null)
             return false;
 
-        // If remember is true continue
-        if (remember) {
-            // Get first interface component the text "Disable warning"
-            final InterfaceComponent disableWarningComponent = WILDERNESS_WARNING_DISABLE_ADDRESS.resolve();
-
-            // If the component is not null click the checkbox
-            if (disableWarningComponent != null)
-                disableWarningComponent.click();
-        }
-
-        // Click the enter wilderness button
         return enterWildernessComponent.click();
     }
 
@@ -173,18 +181,21 @@ public class ExWilderness {
         if (sceneObject == null)
             return false;
 
-        // Interact with the scene object using the specified action
-        sceneObject.interact(action);
+        // Interact with the scene object using the specified action if the warning isn't open
+        if (!isWarningOpen())
+            sceneObject.interact(action);
 
         // Sleep till the warning pops up or the local player is in the wilderness
-        Time.sleepUntil(() -> isWarningOpen() || isInWilderness(), Random.polar(1000, 2000));
+        Time.sleepUntil(() -> isWarningOpen() || isInWilderness(), Random.low(2000, 4000));
 
         // If the warning is open, approve the warning and sleep till it is no longer open
-        if (isWarningOpen())
-            Time.sleepUntil(() -> approveWarning(remember) && !isWarningOpen(), Random.polar(1000, 2000));
+        if (isWarningOpen()) {
+            if (approveWarning(remember))
+                Time.sleepUntil(() -> !isWarningOpen(), Random.low(2000, 4000));
+        }
 
         // Sleep until the player is in the wilderness
-        return Time.sleepUntil(ExWilderness::isInWilderness, Random.polar(1000, 2000));
+        return Time.sleepUntil(ExWilderness::isInWilderness, Random.low(2000, 4000));
     }
 
     /**
