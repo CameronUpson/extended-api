@@ -186,7 +186,7 @@ public class ExWilderness {
             sceneObject.interact(action);
 
         // Sleep till the warning pops up or the local player is in the wilderness
-        Time.sleepUntil(() -> isWarningOpen() || isInWilderness(), Random.low(2000, 4000));
+        Time.sleepUntil(() -> isWarningOpen() || isInWilderness(), Random.high(6000, 10000));
 
         // If the warning is open, approve the warning and sleep till it is no longer open
         if (isWarningOpen()) {
