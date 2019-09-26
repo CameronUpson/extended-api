@@ -1,27 +1,27 @@
-package org.rspeer.runetek.api.automation;
+package org.rspeer.runetek.api.bot_management;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.*;
-import org.rspeer.runetek.api.automation.data.LaunchedClient;
-import org.rspeer.runetek.api.automation.data.Launcher;
-import org.rspeer.runetek.api.automation.data.QuickLaunch;
+import org.rspeer.runetek.api.bot_management.data.LaunchedClient;
+import org.rspeer.runetek.api.bot_management.data.Launcher;
+import org.rspeer.runetek.api.bot_management.data.QuickLaunch;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.*;
 
-public class Management {
+public class BotManagement {
 
     private static final OkHttpClient HTTP_CLIENT = new OkHttpClient();
+    private static final String DEFAULT_JVM_ARGS = "-Xmx768m -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true -Xss2m";
 
     public static boolean startDefaultClient(int pcIndex) throws IOException {
         return startClient(pcIndex,
                 null,
-                "-Xmx384m -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true -Xss2m",
+                DEFAULT_JVM_ARGS,
                 10,
                 null,
                 1
@@ -40,7 +40,7 @@ public class Management {
         return startClient(
                 pcIndex,
                 qs,
-                "-Xmx384m -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true -Xss2m",
+                DEFAULT_JVM_ARGS,
                 sleep,
                 proxy,
                 count
@@ -48,9 +48,7 @@ public class Management {
     }
 
     public static boolean startClient(int pcIndex, String qs, String jvmArgs, int sleep, String proxy, int count) throws IOException {
-        final String apiKey = Authentication.getApiKey();
-        if (apiKey.isEmpty())
-            throw new FileNotFoundException("Could not find api key file");
+        final String apiKey = BotManagementFileHelper.getApiKeyOrThrow();
 
         List<Launcher> launchers = getLaunchers();
         final Headers headers = new Headers.Builder()
@@ -87,9 +85,7 @@ public class Management {
     }
 
     public static boolean addProxy(String name, String ip, String port, String username, String password) throws Exception {
-        final String apiKey = Authentication.getApiKey();
-        if (apiKey.isEmpty())
-            throw new FileNotFoundException("Could not find api key file");
+        final String apiKey = BotManagementFileHelper.getApiKeyOrThrow();
 
         final Headers headers = new Headers.Builder()
                 .add("ApiClient", apiKey)
@@ -121,9 +117,7 @@ public class Management {
     }
 
     public static List<QuickLaunch> getQuickLaunchers() throws IOException {
-        final String apiKey = Authentication.getApiKey();
-        if (apiKey.isEmpty())
-            throw new FileNotFoundException("Could not find api key file");
+        final String apiKey = BotManagementFileHelper.getApiKeyOrThrow();
 
         final Request request = new Request.Builder()
                 .url("https://services.rspeer.org/api/botLauncher/getQuickLaunch")
@@ -148,9 +142,7 @@ public class Management {
     }
 
     public static List<LaunchedClient> getRunningClients() throws IOException {
-        final String apiKey = Authentication.getApiKey();
-        if (apiKey.isEmpty())
-            throw new FileNotFoundException("Could not find api key file");
+        final String apiKey = BotManagementFileHelper.getApiKeyOrThrow();
 
         final Request request = new Request.Builder()
                 .url("https://services.rspeer.org/api/botLauncher/connectedClients")
@@ -174,9 +166,7 @@ public class Management {
     }
 
     public static List<Launcher> getLaunchers() throws IOException {
-        final String apiKey = Authentication.getApiKey();
-        if (apiKey.isEmpty())
-            throw new FileNotFoundException("Could not find api key file");
+        final String apiKey = BotManagementFileHelper.getApiKeyOrThrow();
 
         final Request request = new Request.Builder()
                 .url("https://services.rspeer.org/api/botLauncher/connected")

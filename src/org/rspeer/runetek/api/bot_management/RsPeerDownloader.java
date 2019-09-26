@@ -1,4 +1,4 @@
-package org.rspeer.runetek.api.automation;
+package org.rspeer.runetek.api.bot_management;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class Download {
+public class RsPeerDownloader {
 
     private static final OkHttpClient HTTP_CLIENT = new OkHttpClient();
 
@@ -21,9 +21,7 @@ public class Download {
         if (!shouldDownload())
             return true;
 
-        final String apiKey = Authentication.getApiKey();
-        if (apiKey.isEmpty())
-            return false;
+        final String apiKey = BotManagementFileHelper.getApiKeyOrThrow();
 
         final Request request = new Request.Builder()
                 .url("https://services.rspeer.org/api/bot/currentJar")
@@ -41,7 +39,7 @@ public class Download {
 
         final InputStream is = body.byteStream();
 
-        Files.copy(is, Paths.get(AutomationFileHelper.getFile("cache" + File.separator + "rspeer.jar").toURI()));
+        Files.copy(is, Paths.get(BotManagementFileHelper.getFile("cache" + File.separator + "rspeer.jar").toURI()));
         is.close();
 
         saveVersionFile(getCurrentJarVersion());
@@ -49,12 +47,12 @@ public class Download {
     }
 
     private static void saveVersionFile(String version) throws IOException {
-        final File file = AutomationFileHelper.getCurrentVersionFile();
+        final File file = BotManagementFileHelper.getCurrentVersionFile();
         Files.write(file.toPath(), version.getBytes());
     }
 
     public static boolean shouldDownload() throws IOException {
-        final File file = AutomationFileHelper.getCurrentVersionFile();
+        final File file = BotManagementFileHelper.getCurrentVersionFile();
         if (!file.exists())
             return true;
         final String currentJarVersion = getCurrentJarVersion();

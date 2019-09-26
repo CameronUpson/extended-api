@@ -1,9 +1,8 @@
-package org.rspeer.runetek.api.automation.data;
+package org.rspeer.runetek.api.bot_management.data;
 
 import okhttp3.*;
-import org.rspeer.runetek.api.automation.Authentication;
+import org.rspeer.runetek.api.bot_management.BotManagementFileHelper;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class LaunchedClient {
@@ -57,9 +56,7 @@ public class LaunchedClient {
     }
 
     public boolean kill() throws IOException {
-        final String apiKey = Authentication.getApiKey();
-        if (apiKey.isEmpty())
-            throw new FileNotFoundException("Could not find api key file");
+        final String apiKey = BotManagementFileHelper.getApiKeyOrThrow();
 
         final Request request = new Request.Builder()
                 .url("https://services.rspeer.org/api/botLauncher/sendNew?message=:kill&tag=" + tag)
