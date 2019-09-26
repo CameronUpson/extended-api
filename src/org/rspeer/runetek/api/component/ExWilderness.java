@@ -193,9 +193,8 @@ public class ExWilderness {
         Time.sleepUntil(() -> isWarningOpen() || isInWilderness(), Random.high(6000, 10000));
 
         // If the warning is open, approve the warning and sleep till it is no longer open
-        if (isWarningOpen()) {
-            if (approveWarning(remember))
-                Time.sleepUntil(() -> !isWarningOpen(), Random.low(2000, 4000));
+        if (isWarningOpen() && approveWarning(remember)) {
+            Time.sleepUntil(() -> !isWarningOpen(), Random.low(2000, 4000));
         }
 
         // Sleep until the player is in the wilderness
