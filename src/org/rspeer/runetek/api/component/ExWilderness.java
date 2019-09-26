@@ -90,6 +90,10 @@ public class ExWilderness {
      * @return true if the target player is in the wilderness; false otherwise
      */
     public static boolean isInWilderness(final Player target) {
+        // If the target player is equal to the local player then use the local player check
+        if (target.equals(Players.getLocal()))
+            return isInWilderness();
+
         // If target player is contained within one of these areas (there are probably more) then return true
         return WILDERNESS_SURFACE_AREA.contains(target)
                 || WILDERNESS_EDGEVILLE_DUNGEON_AREA.contains(target);
