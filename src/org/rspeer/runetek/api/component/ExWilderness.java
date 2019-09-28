@@ -138,7 +138,7 @@ public class ExWilderness {
      *
      * @return true if the local player can be attacked by any loaded player; false otherwise
      */
-    public static boolean canLocalBeAttacked() {
+    public static boolean canAnyPlayerAttackLocal() {
         // If the local player is not in the wilderness return false
         if (!isInWilderness())
             return false;
