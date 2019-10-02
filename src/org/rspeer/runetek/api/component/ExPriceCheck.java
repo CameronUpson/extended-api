@@ -46,7 +46,7 @@ public class ExPriceCheck {
      */
     private static void setOSBuddySummaryJson() throws IOException {
         final Request request = new Request.Builder()
-                .url("https://storage.googleapis.com/osbuddy-exchange/summary.json")
+                .url("https://storage.googleapis.com/osb-exchange/summary.json")
                 .get()
                 .build();
         final Response response = HTTP_CLIENT.newCall(request).execute();
