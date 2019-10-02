@@ -134,6 +134,27 @@ public class ExWilderness {
     }
 
     /**
+     * Checks whether the local player can be attacked by any loaded player
+     *
+     * @return true if the local player can be attacked by any loaded player; false otherwise
+     */
+    public static boolean canAnyPlayerAttackLocal() {
+        // If the local player is not in the wilderness return false
+        if (!isInWilderness())
+            return false;
+
+        // Loop through all loaded players (exclude local player)
+        for (Player player : Players.getLoaded(player -> !player.equals(Players.getLocal()))) {
+            // If the loaded player can attack the local player return true
+            if (canAttackLocal(player)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Approves the wilderness warning
      *
      * @param remember click on remember so the warning doesn't pop up again
