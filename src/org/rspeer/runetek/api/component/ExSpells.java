@@ -3,6 +3,7 @@ package org.rspeer.runetek.api.component;
 import org.rspeer.runetek.adapter.component.InterfaceComponent;
 import org.rspeer.runetek.api.Varps;
 import org.rspeer.runetek.api.commons.Time;
+import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.tab.*;
 
 /**
@@ -11,29 +12,41 @@ import org.rspeer.runetek.api.component.tab.*;
 
 public final class ExSpells {
 
-    private static final int AUTOCAST_VARP = 108;
-    private static final InterfaceAddress AUTO_CAST_MENU = new InterfaceAddress(() -> Interfaces.getComponent(201, 1, 1));
+    private static final int COMBAT_TAB_INTERFACE_ID = 593;
 
-    public static boolean isBestSpellAutoCasted() {
-        return getBestSpell().isAutoCasted();
-    }
+    private static final int AUTO_CAST_MENU_INTERFACE_ID = 201;
+    private static final int AUTO_CAST_VARP = 108;
+    private static final InterfaceAddress AUTO_CAST_ROOT_MENU = new InterfaceAddress(() -> {
+        final InterfaceComponent[] components = Interfaces.get(AUTO_CAST_MENU_INTERFACE_ID);
+
+        if (components.length == 0)
+            return null;
+
+        return components[0];
+    });
 
     public static ExSpell getBestSpell() {
+        final ExSpell[] allSpells = ExSpell.values();
+
         ExSpell currentSpell = ExSpell.WIND_STRIKE;
-        ExSpell[] allSpells = ExSpell.values();
+
         for (ExSpell currentlyChecked : allSpells) {
-            if (currentlyChecked == currentSpell)
+            if (currentlyChecked == currentSpell) {
                 continue;
-            if (currentlyChecked.getLevelRequired() > currentSpell.getLevelRequired() && currentlyChecked.canCast())
+            }
+
+            if (currentlyChecked.getLevelRequired() > currentSpell.getLevelRequired() && currentlyChecked.canCast()) {
                 currentSpell = currentlyChecked;
+            }
         }
         return currentSpell;
     }
 
-    public static ExSpell getCurrentlySelected() {
+    public static ExSpell getSelectedSpell() {
         for (ExSpell spell : ExSpell.values()) {
-            if (spell.isAutoCasted())
+            if (spell.isAutoCasted()) {
                 return spell;
+            }
         }
         return null;
     }
@@ -44,47 +57,82 @@ public final class ExSpells {
 
     public static boolean isAutoCasted(Spell spell) {
         for (ExSpell exSpell : ExSpell.values()) {
-            if (exSpell.getSpell() == spell) {
+            if (exSpell.getSpell().equals(spell)) {
                 return isAutoCasted(exSpell);
             }
         }
         return false;
     }
 
-    public static boolean selectAutoCast(Spell spell) {
+    public static boolean isBestSpellAutoCasted() {
+        return getBestSpell().isAutoCasted();
+    }
+
+    public static boolean autoCast(Spell spell, boolean defensive) {
         for (ExSpell exSpell : ExSpell.values()) {
-            if (exSpell.getSpell() == spell)
-                return selectAutoCast(exSpell);
+            if (exSpell.getSpell() == spell) {
+                return autoCast(exSpell, defensive);
+            }
         }
         return false;
     }
 
-    public static boolean selectAutoCast(ExSpell spell) {
-        return openAutoCastSettings() && selectSpell(spell);
+    public static boolean autoCast(Spell spell) {
+        return autoCast(spell, false);
     }
 
-    private static boolean openAutoCastSettings() {
-        if (AUTO_CAST_MENU.resolve() != null)
+    public static boolean autoCast(ExSpell spell, boolean defensive) {
+        return openAutoCastSettings(defensive) && selectSpell(spell);
+    }
+
+    public static boolean autoCast(ExSpell spell) {
+        return autoCast(spell, false);
+    }
+
+    public static boolean openAutoCastSettings(boolean defensive) {
+        if (AUTO_CAST_ROOT_MENU.resolve() != null)
             return true;
 
-        InterfaceComponent bookComponent = Interfaces.get(593, a -> a.containsAction("Choose spell"))[1];
-        return openCombatTab() && bookComponent != null && bookComponent.interact("Choose spell") &&
-                Time.sleepUntil(() -> AUTO_CAST_MENU.resolve() != null, 600, 1200);
+        InterfaceComponent chooseSpellComponent = getChooseSpellComponent(defensive);
+
+        if (chooseSpellComponent == null)
+            return false;
+
+        return openCombatTab()
+                && chooseSpellComponent.click()
+                && Time.sleepUntil(() -> AUTO_CAST_ROOT_MENU.resolve() != null, Random.low(600, 1600));
     }
 
-    private static boolean selectSpell(ExSpell spell) {
-        InterfaceComponent spellComponent = Interfaces.getComponent(201, 1, spell.getSpellIndex());
-        return spellComponent != null && spellComponent.interact(a -> a.toLowerCase().equals(spell.getName()))
-                && Time.sleepUntil(spell::isAutoCasted, 600, 1200);
+    public static boolean openAutoCastSettings() {
+        return openAutoCastSettings(false);
+    }
+
+    public static boolean selectSpell(ExSpell spell) {
+        final InterfaceComponent spellComponent = Interfaces.getComponent(AUTO_CAST_MENU_INTERFACE_ID, 1, spell.getSpellIndex());
+
+        return spellComponent != null
+                && spellComponent.interact(action -> action.toLowerCase().equals(spell.getName()))
+                && Time.sleepUntil(spell::isAutoCasted, Random.low(600, 1600));
     }
 
     private static boolean openCombatTab() {
-        if (Tab.COMBAT.isOpen())
+        if (Tabs.isOpen(Tab.COMBAT))
             return true;
 
-        InterfaceComponent combatComponent = Tab.COMBAT.getComponent();
-        return combatComponent != null && combatComponent.interact("Combat Options") &&
-                Time.sleepUntil(Tab.COMBAT::isOpen, 600, 1200);
+        return Tabs.open(Tab.COMBAT)
+                && Time.sleepUntil(() -> Tabs.isOpen(Tab.COMBAT), Random.low(600, 1600));
+    }
+
+    private static InterfaceComponent getChooseSpellComponent(boolean defensive) {
+        final int index = defensive ? 0 : 1;
+
+        final InterfaceComponent[] components =  Interfaces.get(COMBAT_TAB_INTERFACE_ID,
+                interfaceComponent -> interfaceComponent.containsAction("Choose spell"));
+
+        if (components.length < 2)
+            return null;
+
+        return components[index];
     }
 
     public enum ExSpell {
@@ -112,7 +160,7 @@ public final class ExSpells {
         }
 
         public boolean isAutoCasted() {
-            return Varps.get(AUTOCAST_VARP) == varpIndex;
+            return Varps.get(AUTO_CAST_VARP) == varpIndex;
         }
 
         public boolean canCast() {
