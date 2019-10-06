@@ -60,7 +60,7 @@ public final class ExWorldHopper {
     }
 
     public static boolean randomInstaHopInPureF2p() {
-        return randomInstaHop(PURE_WORLD_PREDICATE, 318, 319);
+        return randomInstaHop(PURE_WORLD_PREDICATE);
     }
 
     public static boolean randomInstaHopInP2p() {
