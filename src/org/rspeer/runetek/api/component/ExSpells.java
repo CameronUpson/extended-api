@@ -7,7 +7,7 @@ import org.rspeer.runetek.api.commons.math.Random;
 import org.rspeer.runetek.api.component.tab.*;
 
 /**
- * @author qverkk
+ * @author qverkk and Typically
  */
 
 public final class ExSpells {
@@ -25,6 +25,11 @@ public final class ExSpells {
         return components[0];
     });
 
+    /**
+     * Returns the best spell the local player can cast
+     *
+     * @return the best spell
+     */
     public static ExSpell getBestSpell() {
         final ExSpell[] allSpells = ExSpell.values();
 
@@ -42,6 +47,11 @@ public final class ExSpells {
         return currentSpell;
     }
 
+    /**
+     * Returns the currently selected spell
+     *
+     * @return the currently selected spell
+     */
     public static ExSpell getSelectedSpell() {
         for (ExSpell spell : ExSpell.values()) {
             if (spell.isAutoCasted()) {
@@ -51,10 +61,22 @@ public final class ExSpells {
         return null;
     }
 
+    /**
+     * Checks if the target spell is auto-casted
+     *
+     * @param spell the spell
+     * @return true if the spell is auto-casted; false otherwise
+     */
     public static boolean isAutoCasted(ExSpell spell) {
         return spell.isAutoCasted();
     }
 
+    /**
+     * Checks if the target spell is auto-casted
+     *
+     * @param spell the spell
+     * @return true if the spell is auto-casted; false otherwise
+     */
     public static boolean isAutoCasted(Spell spell) {
         for (ExSpell exSpell : ExSpell.values()) {
             if (exSpell.getSpell().equals(spell)) {
@@ -64,10 +86,22 @@ public final class ExSpells {
         return false;
     }
 
+    /**
+     * Checks if the best spell is auto-casted
+     *
+     * @return true if the best spell is auto-casted; false otherwise
+     */
     public static boolean isBestSpellAutoCasted() {
         return getBestSpell().isAutoCasted();
     }
 
+    /**
+     * Auto-casts a target spell
+     *
+     * @param spell the spell
+     * @param defensive defensive auto-cast
+     * @return true if auto-cast succeeded; false otherwise
+     */
     public static boolean autoCast(Spell spell, boolean defensive) {
         for (ExSpell exSpell : ExSpell.values()) {
             if (exSpell.getSpell() == spell) {
@@ -77,18 +111,43 @@ public final class ExSpells {
         return false;
     }
 
+    /**
+     * Auto-casts a target spell
+     *
+     * @param spell the spell
+     * @return true if auto-cast succeeded; false otherwise
+     */
     public static boolean autoCast(Spell spell) {
         return autoCast(spell, false);
     }
 
+    /**
+     * Auto-casts a target spell
+     *
+     * @param spell the spell
+     * @param defensive defensive auto-cast
+     * @return true if auto-cast succeeded; false otherwise
+     */
     public static boolean autoCast(ExSpell spell, boolean defensive) {
         return openAutoCastSettings(defensive) && selectSpell(spell);
     }
 
+    /**
+     * Auto-casts a target spell
+     *
+     * @param spell the spell
+     * @return true if auto-cast succeeded; false otherwise
+     */
     public static boolean autoCast(ExSpell spell) {
         return autoCast(spell, false);
     }
 
+    /**
+     * Opens the auto-cast settings
+     *
+     * @param defensive defensive auto-cast
+     * @return true if auto-cast settings is open; false otherwise
+     */
     public static boolean openAutoCastSettings(boolean defensive) {
         if (AUTO_CAST_ROOT_MENU.resolve() != null)
             return true;
@@ -103,9 +162,20 @@ public final class ExSpells {
                 && Time.sleepUntil(() -> AUTO_CAST_ROOT_MENU.resolve() != null, Random.low(600, 1600));
     }
 
+    /**
+     * Opens the auto-cast settings
+     *
+     * @return true if auto-cast settings is open; false otherwise
+     */
     public static boolean openAutoCastSettings() {
         return openAutoCastSettings(false);
     }
+    /**
+     * Selects a target spell
+     *
+     * @param spell the spell
+     * @return true if the target spell is selected; false otherwise
+     */
 
     public static boolean selectSpell(ExSpell spell) {
         final InterfaceComponent spellComponent = Interfaces.getComponent(AUTO_CAST_MENU_INTERFACE_ID, 1, spell.getSpellIndex());
