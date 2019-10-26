@@ -8,6 +8,7 @@ import org.rspeer.runetek.providers.RSItemDefinition;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -18,8 +19,15 @@ import java.util.stream.Collectors;
  */
 public class ExTrade {
 
+    private static final int MAX_INVENTORY_SLOTS = 28;
+
     private static final int FIRST_TRADE_WINDOW_PARENT_INDEX = 335;
     private static final int SECOND_TRADE_WINDOW_PARENT_INDEX = 334;
+
+
+    // -----------------------------------------------------------//
+    //                   NEW/EXTENDED METHODS                     //
+    // -----------------------------------------------------------//
 
     private static final String FIRST_SCREEN_TRADER_NAME_PREFIX = "Trading With: ";
     private static final InterfaceAddress FIRST_SCREEN_TRADER_NAME = new InterfaceAddress(() -> Interfaces.getFirst(FIRST_TRADE_WINDOW_PARENT_INDEX, comp -> {
@@ -94,8 +102,32 @@ public class ExTrade {
 
     public static ArrayList<RSItemDefinition> getAllItemDefinitions() {
         ArrayList<RSItemDefinition> itemDefinitions = new ArrayList<>();
-        itemDefinitions.addAll(getAllItemDefinitions(false));
-        itemDefinitions.addAll(getAllItemDefinitions(true));
+        itemDefinitions.addAll(getItemDefinitions(false));
+        itemDefinitions.addAll(getItemDefinitions(true));
+        return itemDefinitions;
+    }
+
+
+    public static ArrayList<RSItemDefinition> getItemDefinitions(boolean theirItems) {
+        if (Trade.isOpen(false)) {
+            return getFirstTradeScreenDefinitions(theirItems);
+        }
+        if (Trade.isOpen(true)) {
+            return getSecondTradeScreenDefinitions(theirItems);
+        }
+        return new ArrayList<>();
+    }
+
+
+    private static ArrayList<RSItemDefinition> getFirstTradeScreenDefinitions(boolean theirItems) {
+        ArrayList<RSItemDefinition> itemDefinitions = new ArrayList<>();
+        Item[] items = theirItems ? Trade.getTheirItems() : Trade.getMyItems();
+        for (Item item : items) {
+            RSItemDefinition itemDefinition = Definitions.getItem(item.getId());
+            if (itemDefinition != null) {
+                itemDefinitions.add(itemDefinition);
+            }
+        }
         return itemDefinitions;
     }
 
@@ -103,125 +135,248 @@ public class ExTrade {
     private static final int SECOND_SCREEN_MY_ITEMS_INDEX = 28;
     private static final int SECOND_SCREEN_THEIR_ITEMS_INDEX = 29;
 
-    public static ArrayList<RSItemDefinition> getAllItemDefinitions(boolean theirItems) {
+    private static ArrayList<RSItemDefinition> getSecondTradeScreenDefinitions(boolean theirItems) {
         ArrayList<RSItemDefinition> itemDefinitions = new ArrayList<>();
-        if (Trade.isOpen(false)) {
-            Item[] items = theirItems ? Trade.getTheirItems() : Trade.getMyItems();
-            for (Item item : items) {
-                RSItemDefinition itemDefinition = Definitions.getItem(item.getId());
-                if (itemDefinition != null) {
-                    itemDefinitions.add(itemDefinition);
-                }
-            }
+        int childIndex = theirItems ? SECOND_SCREEN_THEIR_ITEMS_INDEX : SECOND_SCREEN_MY_ITEMS_INDEX;
+        InterfaceComponent itemContainerComp = Interfaces.getComponent(SECOND_TRADE_WINDOW_PARENT_INDEX, childIndex);
+        if (itemContainerComp == null) {
             return itemDefinitions;
         }
-        if (Trade.isOpen(true)) {
-            int childIndex = theirItems ? SECOND_SCREEN_THEIR_ITEMS_INDEX : SECOND_SCREEN_MY_ITEMS_INDEX;
-            InterfaceComponent itemContainerComp = Interfaces.getComponent(SECOND_TRADE_WINDOW_PARENT_INDEX, childIndex);
-            if (itemContainerComp == null) {
-                return itemDefinitions;
-            }
-            InterfaceComponent[] itemComps = itemContainerComp.getComponents();
-            if (itemComps == null) {
-                return itemDefinitions;
-            }
-            for (InterfaceComponent itemComp : itemComps) {
-                String itemText = itemComp.getText();
-                if (itemText == null) {
-                    continue;
-                }
-                String itemName = (itemText.contains("<")) ? itemText.substring(0, itemText.indexOf('<')) : itemText;
-                RSItemDefinition itemDefinition = Definitions.getItem(itemName, a->true);
-                if (itemDefinition != null) {
-                    itemDefinitions.add(itemDefinition);
-                }
-            }
+        InterfaceComponent[] itemComps = itemContainerComp.getComponents();
+        if (itemComps == null) {
             return itemDefinitions;
+        }
+        for (InterfaceComponent itemComp : itemComps) {
+            String itemText = itemComp.getText();
+            if (itemText == null) {
+                continue;
+            }
+            String itemName = (itemText.contains("<")) ? itemText.substring(0, itemText.indexOf('<')) : itemText;
+            RSItemDefinition itemDefinition = Definitions.getItem(itemName, a->true);
+            if (itemDefinition != null) {
+                itemDefinitions.add(itemDefinition);
+            }
         }
         return itemDefinitions;
     }
 
 
-    public static boolean contains(int itemId) {
+    // -----------------------------------------------------------//
+    //                INVENTORY-BASED METHODS                     //
+    // -----------------------------------------------------------//
+
+    public static boolean contains(int... ids) {
+        List<Integer> idList = toIntegerList(ids);
+        return getAllItemDefinitions().stream()
+                .map(RSItemDefinition::getId)
+                .anyMatch(idList::contains);
+    }
+
+
+    public static boolean contains(boolean theirItems, int... ids) {
+        List<Integer> idList = toIntegerList(ids);
+        return getItemDefinitions(theirItems).stream()
+                .map(RSItemDefinition::getId)
+                .anyMatch(idList::contains);
+    }
+
+
+    public static boolean contains(String... names) {
+        List<String> nameList = Arrays.asList(names);
+        return getAllItemDefinitions().stream()
+                .map(RSItemDefinition::getName)
+                .anyMatch(nameList::contains);
+    }
+
+
+    public static boolean contains(boolean theirItems, String... names) {
+        List<String> nameList = Arrays.asList(names);
+        return getItemDefinitions(theirItems).stream()
+                .map(RSItemDefinition::getName)
+                .anyMatch(nameList::contains);
+    }
+
+    public static boolean contains(Predicate<? super RSItemDefinition> predicate) {
+        return getAllItemDefinitions().stream()
+                .anyMatch(predicate);
+    }
+
+
+    public static boolean contains(boolean theirItems, Predicate<? super RSItemDefinition> predicate) {
+        return getItemDefinitions(theirItems).stream()
+                .anyMatch(predicate);
+    }
+
+
+    public static boolean containsAll(int... ids) {
+        List<Integer> idList = toIntegerList(ids);
         return getAllItemDefinitions().stream()
                 .map(RSItemDefinition::getId)
                 .collect(Collectors.toList())
-                .contains(itemId);
+                .containsAll(idList);
     }
 
 
-    public static boolean contains(boolean theirItems, int itemId) {
-        return getAllItemDefinitions(theirItems).stream()
+    public static boolean containsAll(boolean theirItems, int... ids) {
+        List<Integer> idList = toIntegerList(ids);
+        return getItemDefinitions(theirItems).stream()
                 .map(RSItemDefinition::getId)
                 .collect(Collectors.toList())
-                .contains(itemId);
+                .containsAll(idList);
     }
 
 
-    public static boolean contains(String itemName) {
-        return getAllItemDefinitions().stream()
-                .map(RSItemDefinition::getName)
-                .collect(Collectors.toList())
-                .contains(itemName);
-    }
-
-
-    public static boolean contains(boolean theirItems, String itemName) {
-        return getAllItemDefinitions(theirItems).stream()
-                .map(RSItemDefinition::getName)
-                .collect(Collectors.toList())
-                .contains(itemName);
-    }
-
-
-    public static boolean containsAll(int... itemIds) {
+    public static boolean containsAll(String... names) {
+        List<String> nameList = Arrays.asList(names);
         return getAllItemDefinitions().stream()
                 .map(RSItemDefinition::getId)
                 .collect(Collectors.toList())
-                .containsAll(Arrays.asList(itemIds));
+                .containsAll(nameList);
     }
 
 
-    public static boolean containsAll(boolean theirItems, int... itemIds) {
-        return getAllItemDefinitions(theirItems).stream()
+    public static boolean containsAll(boolean theirItems, String... names) {
+        List<String> nameList = Arrays.asList(names);
+        return getItemDefinitions(theirItems).stream()
                 .map(RSItemDefinition::getId)
                 .collect(Collectors.toList())
-                .containsAll(Arrays.asList(itemIds));
+                .containsAll(nameList);
     }
 
 
-    public static boolean containsAll(String... itemNames) {
+    public static boolean containsAnyExcept(int... ids) {
+        List<Integer> idList = toIntegerList(ids);
+        return !getAllItemDefinitions().stream()
+                .map(RSItemDefinition::getId)
+                .allMatch(idList::contains);
+    }
+
+
+    public static boolean containsAnyExcept(boolean theirItems, int... ids) {
+        List<Integer> idList = toIntegerList(ids);
+        return !getItemDefinitions(theirItems).stream()
+                .map(RSItemDefinition::getId)
+                .allMatch(idList::contains);
+    }
+
+
+    public static boolean containsAnyExcept(String... names) {
+        List<String> nameList = Arrays.asList(names);
+        return !getAllItemDefinitions().stream()
+                .map(RSItemDefinition::getName)
+                .allMatch(nameList::contains);
+    }
+
+
+    public static boolean containsAnyExcept(boolean theirItems, String... names) {
+        List<String> nameList = Arrays.asList(names);
+        return !getItemDefinitions(theirItems).stream()
+                .map(RSItemDefinition::getName)
+                .allMatch(nameList::contains);
+    }
+
+
+    public static boolean containsAnyExcept(Predicate<? super RSItemDefinition> predicate) {
+        return !getAllItemDefinitions().stream()
+                .allMatch(predicate);
+    }
+
+
+    public static boolean containsAnyExcept(boolean theirItems, Predicate<? super RSItemDefinition> predicate) {
+        return !getItemDefinitions(theirItems).stream()
+                .allMatch(predicate);
+    }
+
+
+    public static boolean containsOnly(int... ids) {
+        List<Integer> idList = toIntegerList(ids);
+        return getAllItemDefinitions().stream()
+                .map(RSItemDefinition::getId)
+                .allMatch(idList::contains);
+    }
+
+
+    public static boolean containsOnly(boolean theirItems, int... ids) {
+        List<Integer> idList = toIntegerList(ids);
+        return getItemDefinitions(theirItems).stream()
+                .map(RSItemDefinition::getId)
+                .allMatch(idList::contains);
+    }
+
+
+    public static boolean containsOnly(String... names) {
+        List<String> nameList = Arrays.asList(names);
         return getAllItemDefinitions().stream()
                 .map(RSItemDefinition::getName)
-                .collect(Collectors.toList())
-                .containsAll(Arrays.asList(itemNames));
+                .allMatch(nameList::contains);
     }
 
 
-    public static boolean containsAll(boolean theirItems, String... itemNames) {
-        return getAllItemDefinitions(theirItems).stream()
+    public static boolean containsOnly(boolean theirItems, String... names) {
+        List<String> nameList = Arrays.asList(names);
+        return getItemDefinitions(theirItems).stream()
                 .map(RSItemDefinition::getName)
-                .collect(Collectors.toList())
-                .containsAll(Arrays.asList(itemNames));
+                .allMatch(nameList::contains);
     }
 
 
-    public static boolean containsAnyExcept(String... itemNames) {
-        List<String> itemNameList = Arrays.asList(itemNames);
+    public static boolean containsOnly(Predicate<? super RSItemDefinition> predicate) {
         return getAllItemDefinitions().stream()
-                .map(RSItemDefinition::getName)
-                .allMatch(itemNameList::contains);
+                .allMatch(predicate);
     }
 
 
-    public static boolean containsAnyExcept(boolean theirItems, String... itemNames) {
-        List<String> itemNameList = Arrays.asList(itemNames);
-        return getAllItemDefinitions(theirItems).stream()
-                .map(RSItemDefinition::getName)
-                .allMatch(itemNameList::contains);
+    public static boolean containsOnly(boolean theirItems, Predicate<? super RSItemDefinition> predicate) {
+        return getItemDefinitions(theirItems).stream()
+                .allMatch(predicate);
     }
 
 
+    // Total number of items from both offers
+    public static int getCount() {
+        return getAllItemDefinitions().size();
+    }
+
+
+    public static int getCount(boolean theirOffer) {
+        return getItemDefinitions(theirOffer).size();
+    }
+
+
+    // Total number of free slots from both offers
+    public static int getFreeSlots() {
+        return (MAX_INVENTORY_SLOTS * 2) - getAllItemDefinitions().size();
+    }
+
+
+    public static int getFreeSlots(boolean theirOffer) {
+        return MAX_INVENTORY_SLOTS - getItemDefinitions(theirOffer).size();
+    }
+
+
+    public static boolean isEmpty() {
+        return getAllItemDefinitions().size() == 0;
+    }
+
+
+    public static boolean isEmpty(boolean theirOffer) {
+        return getItemDefinitions(theirOffer).size() == 0;
+    }
+
+
+    public static boolean isFull() {
+        return getAllItemDefinitions().size() == (MAX_INVENTORY_SLOTS * 2);
+    }
+
+
+    public static boolean isFull(boolean theirOffer) {
+        return getItemDefinitions(theirOffer).size() == MAX_INVENTORY_SLOTS;
+    }
+
+
+    // -----------------------------------------------------------//
+    //                      HELPER METHODS                        //
+    // -----------------------------------------------------------//
     private static int numbersFromString(String str) {
         String numStr = str.replaceAll("\\D+","");
         if (numStr.isEmpty()) {
@@ -231,8 +386,15 @@ public class ExTrade {
     }
 
 
-//-----------------------------------------------------------------
-//    // INTERFACE COMPONENT INDEXES
+    private static List<Integer> toIntegerList(int[] ints) {
+        List<Integer> intList = new ArrayList<>(ints.length);
+        for (int i : ints) intList.add(i);
+        return intList;
+    }
+
+//   //-----------------------------------------------------------//
+//   //                     COMPONENT INDICES                     //
+//   //-----------------------------------------------------------//
 //    private static final int FIRST_TRADE_PLAYER_NAME = 31;
 //    private static final int FIRST_TRADE_THEIR_OFFER = 27;
 //    private static final int FIRST_TRADE_MY_OFFER = 24;
@@ -244,6 +406,6 @@ public class ExTrade {
 //
 //    private static final int SECOND_TRADE_THEIR_COINS = 29;
 //    private static final int SECOND_TRADE_MY_COINS = 28;
-//-----------------------------------------------------------------
+//
 }
 
