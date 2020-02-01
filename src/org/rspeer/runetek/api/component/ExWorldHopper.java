@@ -67,23 +67,16 @@ public final class ExWorldHopper {
      * Insta hops to a random world with a predicate
      *
      * @param predicate the predicate for the random world
-     * @return true if it succeeds to insta hop; false otherwise
-     */
-    public static boolean randomInstaHop(Predicate<RSWorld> predicate) {
-        return instaHopTo(ExWorlds.getRandom(predicate));
-    }
-
-    /**
-     * Insta hops to a random world with a predicate
-     *
-     * @param predicate the predicate for the random world
-     * @param excluded the world id's to exclude from the predicate
+     * @param excluded  the world id's to exclude from the predicate
      * @return true if it succeeds to insta hop; false otherwise
      */
     public static boolean randomInstaHop(Predicate<RSWorld> predicate, Integer... excluded) {
-        final List<Integer> excludedList = Arrays.asList(excluded);
+        if (excluded != null) {
+            final List<Integer> excludedList = Arrays.asList(excluded);
+            predicate = predicate.and(rsWorld -> !excludedList.contains(rsWorld.getId()));
+        }
 
-        return randomInstaHop(predicate.and(rsWorld -> !excludedList.contains(rsWorld.getId())));
+        return instaHopTo(ExWorlds.getRandom(predicate));
     }
 
     /**
